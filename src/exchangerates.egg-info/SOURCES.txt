@@ -1,0 +1,11 @@
+README.md
+setup.py
+src/configuration/__init__.py
+src/configuration/configuration.py
+src/connector/__init__.py
+src/connector/url.py
+src/exchangerates.egg-info/PKG-INFO
+src/exchangerates.egg-info/SOURCES.txt
+src/exchangerates.egg-info/dependency_links.txt
+src/exchangerates.egg-info/top_level.txt
+src/operators/__init__.py
