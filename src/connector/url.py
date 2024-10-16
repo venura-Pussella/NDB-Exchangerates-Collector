@@ -1,4 +1,5 @@
 import os
+from io import BytesIO
 from playwright.async_api import async_playwright
 from src.configuration.configuration import url, USER_AGENT
 from azure.storage.blob import BlobServiceClient
@@ -8,8 +9,8 @@ load_dotenv()
 
 connect_str = os.getenv('connect_str')
 
-# Function to upload a file to Azure Blob Storage
-def upload_to_blob(file_path, blob_name):
+# Function to upload a file (in-memory bytes) to Azure Blob Storage
+def upload_to_blob(data_bytes, blob_name):
     try:
         # Initialize a BlobServiceClient
         blob_service_client = BlobServiceClient.from_connection_string(connect_str)
@@ -21,9 +22,8 @@ def upload_to_blob(file_path, blob_name):
         if not container_client.exists():
             container_client.create_container()
 
-        # Upload the file
-        with open(file_path, "rb") as data:
-            container_client.upload_blob(name=blob_name, data=data, overwrite=True)
+        # Upload the in-memory bytes
+        container_client.upload_blob(name=blob_name, data=data_bytes, overwrite=True)
         print(f"Uploaded {blob_name} to Azure Blob Storage.")
     
     except Exception as e:
@@ -44,12 +44,12 @@ async def fetch_url():
             # Navigate to the URL
             await page.goto(url, timeout=100000)
 
-            # Save screenshot locally first
-            screenshot_path = "debug_screenshot.png"
+            # Capture screenshot as in-memory bytes
+            screenshot_bytes = await page.screenshot()
 
             # Upload screenshot to Azure Blob Storage
             blob_name = "screenshots/debug_screenshot.png"  # You can set the name dynamically
-            upload_to_blob(screenshot_path, blob_name)
+            upload_to_blob(screenshot_bytes, blob_name)
             
             # Get the content of the page
             content = await page.content()
@@ -62,6 +62,7 @@ async def fetch_url():
     except Exception as e:
         print(f"An error occurred: {e}")
         raise
+
 
 # Write the content to a file
 # def write_content_to_html_file(content):
