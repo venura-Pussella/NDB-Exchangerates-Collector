@@ -2,7 +2,7 @@ import os
 
 # CSV data saving path
 url = "https://www.ndbbank.com/rates/exchange-rates"
-USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 14.5; rv:127.0) Gecko/20100101 Firefox/127.0"
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
 
 OUTPUT_HTML = os.path.join("data", "html", "NDB_Exchange_Rates.html")
 OUTPUT_CSV = os.path.join("data", "csv", "NDB_Exchange_Rates.csv")

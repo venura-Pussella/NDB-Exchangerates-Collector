@@ -1,33 +1,5 @@
-import os
-from io import BytesIO
 from playwright.async_api import async_playwright
 from src.configuration.configuration import url, USER_AGENT
-from azure.storage.blob import BlobServiceClient
-from dotenv import load_dotenv
-
-load_dotenv()
-
-connect_str = os.getenv('connect_str')
-
-# Function to upload a file (in-memory bytes) to Azure Blob Storage
-def upload_to_blob(data_bytes, blob_name):
-    try:
-        # Initialize a BlobServiceClient
-        blob_service_client = BlobServiceClient.from_connection_string(connect_str)
-        
-        # Get a client to interact with the container
-        container_client = blob_service_client.get_container_client("ndb-screenshot-page")
-        
-        # Create the container if it doesn't exist
-        if not container_client.exists():
-            container_client.create_container()
-
-        # Upload the in-memory bytes
-        container_client.upload_blob(name=blob_name, data=data_bytes, overwrite=True)
-        print(f"Uploaded {blob_name} to Azure Blob Storage.")
-    
-    except Exception as e:
-        print(f"Failed to upload to Blob Storage: {e}")
 
 async def fetch_url():
     try:
@@ -42,14 +14,7 @@ async def fetch_url():
             page = await context.new_page()
 
             # Navigate to the URL
-            await page.goto(url, timeout=100000)
-
-            # Capture screenshot as in-memory bytes
-            screenshot_bytes = await page.screenshot()
-
-            # Upload screenshot to Azure Blob Storage
-            blob_name = "screenshots/debug_screenshot.png"  # You can set the name dynamically
-            upload_to_blob(screenshot_bytes, blob_name)
+            await page.goto(url, timeout=40000)
             
             # Get the content of the page
             content = await page.content()
@@ -62,7 +27,6 @@ async def fetch_url():
     except Exception as e:
         print(f"An error occurred: {e}")
         raise
-
 
 # Write the content to a file
 # def write_content_to_html_file(content):
@@ -78,3 +42,5 @@ async def fetch_url():
 #         write_content_to_html_file(content)
 #     except Exception as e:
 #         print(f"An error occurred: {e}")
+
+
